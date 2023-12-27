@@ -9,3 +9,8 @@ class Message(models.Model):
     subject = models.CharField(max_length=256)
     creation_date = models.DateField(auto_now_add=True)
     read = models.BooleanField(default=False)
+
+    def mark_as_read(self):
+        if not self.read:
+            self.read = True
+            self.save()

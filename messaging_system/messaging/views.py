@@ -16,16 +16,27 @@ class ReceivedMessage(RetrieveDestroyAPIView):
     def get_queryset(self):
         return Message.objects.filter(receiver=self.request.user.id)
 
+    def get_object(self):
+        message = super().get_object()
+        message.mark_as_read()
+        return message
+
 
 class ReadAllMessages(ListAPIView):
     serializer_class = MessageSerializer
 
     def get_queryset(self):
-        return Message.objects.filter(receiver=self.request.user.id)
+        queryset = Message.objects.filter(receiver=self.request.user.id)
+        for message in queryset:
+            message.mark_as_read()
+        return queryset
 
 
 class ReadAllUnreadMessages(ListAPIView):
     serializer_class = MessageSerializer
 
     def get_queryset(self):
-        return Message.objects.filter(receiver=self.request.user.id, read=False)
+        queryset = Message.objects.filter(receiver=self.request.user.id, read=False)
+        for message in queryset:
+            message.mark_as_read()
+        return queryset
