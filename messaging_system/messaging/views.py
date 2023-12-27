@@ -1,31 +1,31 @@
-from rest_framework.views import APIView
+from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveDestroyAPIView
+
+from .models import Message
+from .serializers import MessageSerializer
 
 
-class WriteMessage(APIView):
-
-    def post(self, request):
-        pass
+class SendMessage(CreateAPIView):
+    serializer_class = MessageSerializer
 
 
-class ReadMessage(APIView):
+class ReceivedMessage(RetrieveDestroyAPIView):
 
-    def get(self, request):
-        pass
+    serializer_class = MessageSerializer
+    lookup_url_kwarg = 'message_id'
 
-
-class ReadAllMessages(APIView):
-
-    def get(self, request):
-        pass
+    def get_queryset(self):
+        return Message.objects.filter(receiver=self.request.user.id)
 
 
-class ReadAllUnreadMessages(APIView):
+class ReadAllMessages(ListAPIView):
+    serializer_class = MessageSerializer
 
-    def get(self, request):
-        pass
+    def get_queryset(self):
+        return Message.objects.filter(receiver=self.request.user.id)
 
 
-class DeleteMessage(APIView):
+class ReadAllUnreadMessages(ListAPIView):
+    serializer_class = MessageSerializer
 
-    def delete(self, request):
-        pass
+    def get_queryset(self):
+        return Message.objects.filter(receiver=self.request.user.id, read=False)
